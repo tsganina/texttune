@@ -4,7 +4,8 @@ from langdetect import detect
 import io
 import speech_recognition as sr
 from pydub import AudioSegment
-import os
+from pydub.silence import split_on_silence
+from collections import Counter
 
 app = Flask(__name__)
 
@@ -14,17 +15,94 @@ def convert_to_wav_in_memory(file_data):
     :param file_data: Данные аудиофайла в байтах
     :return: io.BytesIO объект с WAV-аудио
     """
-    audio = AudioSegment.from_file(io.BytesIO(file_data))  # Загружаем аудио из памяти
-    wav_buffer = io.BytesIO()  # Создаём буфер для WAV
-    audio.export(wav_buffer, format='wav')  # Экспортируем как WAV
-    wav_buffer.seek(0)  # Возвращаем указатель на начало файла
+    audio = AudioSegment.from_file(io.BytesIO(file_data))
+    wav_buffer = io.BytesIO()
+    audio.export(wav_buffer, format='wav')
+    wav_buffer.seek(0)
     return wav_buffer
 
-def text_to_audio(text):
+def recognize_chunk(chunk_data):
+    """
+    Распознаёт текст в одном аудиофрагменте.
+    :param chunk_data: Данные WAV-фрагмента
+    :return: Распознанный текст и язык
+    """
+    recognizer = sr.Recognizer()
+    with sr.AudioFile(chunk_data) as source:
+        audio_data = recognizer.record(source)
+
     try:
-        # Определяем язык текста
+        # Пробуем сначала на русском
+        text = recognizer.recognize_google(audio_data, language='ru-RU')
         detected_language = detect(text)
-        # Создаем аудио с использованием gTTS
+        if detected_language == 'es':
+            # Если язык оказался испанским, пробуем распознать на испанском
+            text = recognizer.recognize_google(audio_data, language='es-ES')
+        elif detected_language == 'en':
+            # Если язык оказался английским, пробуем распознать на английском
+            text = recognizer.recognize_google(audio_data, language='en-US')
+        return text, detected_language
+    except sr.UnknownValueError:
+        try:
+            # Если на русском не получилось, пробуем на испанском
+            text = recognizer.recognize_google(audio_data, language='es-ES')
+            return text, 'es'
+        except sr.UnknownValueError:
+            try:
+                # Если не получилось на испанском, пробуем на английском
+                text = recognizer.recognize_google(audio_data, language='en-US')
+                return text, 'en'
+            except sr.UnknownValueError:
+                return "Не удалось распознать речь", None
+            except sr.RequestError as e:
+                return f"Ошибка запроса: {e}", None
+    except sr.RequestError as e:
+        return f"Ошибка запроса: {e}", None
+
+
+def recognize_long_audio(file_data):
+    """
+    Обрабатывает длинное аудио, разбивает его на части и распознаёт каждую.
+    :param file_data: Данные аудиофайла
+    :return: Полный текст и доминирующий язык
+    """
+    try:
+        audio = AudioSegment.from_file(io.BytesIO(file_data))
+        chunks = split_on_silence(
+            audio,
+            min_silence_len=500,
+            silence_thresh=audio.dBFS - 14,
+            keep_silence=250
+        )
+
+        full_text = []
+        languages = []
+
+        for chunk in chunks:
+            chunk_buffer = io.BytesIO()
+            chunk.export(chunk_buffer, format="wav")
+            chunk_buffer.seek(0)
+
+            text, language = recognize_chunk(chunk_buffer)
+            if text:
+                full_text.append(text)
+            if language:
+                languages.append(language)
+
+        # Определяем доминирующий язык
+        dominant_language = Counter(languages).most_common(1)[0][0] if languages else "не определён"
+        return " ".join(full_text), dominant_language
+    except Exception as e:
+        return f"Ошибка обработки аудио: {str(e)}", None
+
+def text_to_audio(text):
+    """
+    Конвертирует текст в аудио.
+    :param text: Строка текста
+    :return: io.BytesIO объект с аудио и язык текста
+    """
+    try:
+        detected_language = detect(text)
         tts = gTTS(text=text, lang=detected_language, slow=False)
         audio_buffer = io.BytesIO()
         tts.write_to_fp(audio_buffer)
@@ -32,19 +110,6 @@ def text_to_audio(text):
         return audio_buffer, detected_language
     except Exception as e:
         return None, f"Ошибка: {str(e)}"
-
-def recognize_audio(file_path):
-    recognizer = sr.Recognizer()
-    with sr.AudioFile(file_path) as source:
-        audio_data = recognizer.record(source)
-    
-    try:
-        text = recognizer.recognize_google(audio_data)
-        return text
-    except sr.UnknownValueError:
-        return "Не удалось распознать речь"
-    except sr.RequestError as e:
-        return f"Ошибка запроса к сервису распознавания: {e}"
 
 @app.route('/')
 def index():
@@ -63,86 +128,23 @@ def text_to_audio_page():
         return "Пожалуйста, введите текст для конвертации."
     return render_template('text_to_audio.html')
 
-# Функция для преобразования в формат WAV
-def convert_to_wav_in_memory(audio_file):
-    audio = AudioSegment.from_file(io.BytesIO(audio_file))
-    wav_buffer = io.BytesIO()
-    audio.export(wav_buffer, format='wav')
-    wav_buffer.seek(0)
-    return wav_buffer
-
-# Функция для определения языка текста
-def detect_language(text):
-    try:
-        language = detect(text)
-        if language == 'ru':
-            return 'ru'
-        elif language == 'es':
-            return 'es'
-        else:
-            return 'en'
-    except:
-        return 'en'  # По умолчанию считаем английский
-
-# Функция для распознавания речи с учетом языка
-def recognize_audio(audio_file):
-    wav_audio = convert_to_wav_in_memory(audio_file)  # Преобразуем в WAV
-    recognizer = sr.Recognizer()
-
-    with sr.AudioFile(wav_audio) as source:
-        audio_data = recognizer.record(source)
-
-    # Попробуем распознать текст на русском
-    try:
-        text = recognizer.recognize_google(audio_data, language='ru-RU')
-        detected_language = detect_language(text)  # Определяем язык
-
-        if detected_language == 'en':
-            # Если язык оказался английским, пробуем распознать на английском
-            text = recognizer.recognize_google(audio_data, language='en-US')
-            language = 'английский'
-        elif detected_language == 'es':
-            # Если язык испанский, пробуем распознать на испанском
-            text = recognizer.recognize_google(audio_data, language='es-ES')
-            language = 'испанский'
-        else:
-            language = 'русский'
-
-        return text, language
-    except sr.UnknownValueError:
-        try:
-            # Если не получилось на русском, пробуем на испанском
-            text = recognizer.recognize_google(audio_data, language='es-ES')
-            language = 'испанский'
-            return text, language
-        except sr.UnknownValueError:
-            try:
-                # Если не получилось на испанском, пробуем на английском
-                text = recognizer.recognize_google(audio_data, language='en-US')
-                language = 'английский'
-                return text, language
-            except sr.UnknownValueError:
-                return "Не удалось распознать речь", None
-            except sr.RequestError as e:
-                return f"Ошибка запроса к сервису распознавания: {e}", None
-
-# Маршрут Flask для страницы с распознаванием аудио в текст
 @app.route('/audio_to_text', methods=['GET', 'POST'])
 def audio_to_text_page():
-    recognized_text = None  # Переменная для текста
+    recognized_text = None
+    dominant_language = None
     if request.method == 'POST':
         file = request.files['audio_file']
         if file:
             try:
-                # Получаем файл, распознаем речь и определяем язык
                 audio_file = file.read()
-                recognized_text, language = recognize_audio(audio_file)
+                recognized_text, dominant_language = recognize_long_audio(audio_file)
+                if not recognized_text.strip():
+                    recognized_text = "Текст не распознан."
             except Exception as e:
                 recognized_text = f"Ошибка распознавания: {str(e)}"
 
-    return render_template('audio_to_text.html', recognized_text=recognized_text)
+    return render_template('audio_to_text.html', recognized_text=recognized_text, dominant_language=dominant_language)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=5000)
-
+    app.run(host='0.0.0.0', debug=True)
