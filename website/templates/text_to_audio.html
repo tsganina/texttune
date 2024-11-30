@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Текст в аудио</title>
+    <link rel="shortcut icon" href="/static/images/icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+
+<body>
+
+    <header>
+        <a href="#" style="float:left; margin-left:90px; margin-top:10px; margin-right:50px;">
+            <img src="/static/images/icon.png" style="width:40px; height:40px;">
+        </a>
+        <a style="float:left; margin-left:-37px; margin-top:5px; font-size: 35px; display: flex; align-items: center;">TextTune</a>
+        
+        <!-- Меню -->
+        <nav>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}">Главная</a></li>
+                <li><a href="{{ url_for('text_to_audio_page') }}">Текст в аудио</a></li>
+                <li><a href="{{ url_for('audio_to_text_page') }}">Аудио в текст</a></li>
+            </ul>
+        </nav>
+
+        <!-- Кнопка гамбургера -->
+        <button class="menu-toggle" onclick="toggleMenu()">&#9776;</button>
+    </header>
+
+
+    <div class="container">
+        <h1>Текст в аудио</h1>
+        <form action="/text_to_audio" method="POST">
+            <textarea name="text" rows="4" cols="50" placeholder="Введите текст"></textarea><br><br>
+            <button type="submit">Конвертировать</button>
+        </form>
+        <br>
+        <p>
+            Над проектом работали: <strong>Ганина Таисия, Астраханцева Анастасия, Ибатулина Дарья</strong> 
+            <br>
+            &copy; Все права защищены
+        </p>
+    </div>
+
+
+    <!-- Скрипт для переключения меню -->
+    <script>
+        function toggleMenu() {
+            var menu = document.querySelector('.nav-links');
+            menu.classList.toggle('active'); // Переключаем класс 'active' для отображения/скрытия меню
+        }
+    </script>
+
+</body>
+</html>
+
