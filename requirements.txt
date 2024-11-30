@@ -1,0 +1,6 @@
+Flask
+gTTS
+langdetect
+SpeechRecognition
+pydub
+

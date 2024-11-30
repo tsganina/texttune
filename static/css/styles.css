@@ -1,0 +1,276 @@
+/* Общие стили */
+body {
+    background-image: url("../images/background3.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    font-family: "Montserrat Alternates", serif;
+    font-weight: 500;
+    font-style: normal;
+    text-align: center;
+    color: white;
+    padding-top: 30px;
+    padding-bottom: 50px; /* Учитываем высоту header */
+}
+
+
+.containermain {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-top: 50px;
+    text-align: justify;
+    font-size: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-top: 50px;
+    text-align: center;
+    font-size: 20px;
+}
+
+h1 {
+    font-size: 72px;
+    margin-bottom: 20px;
+    color: white;
+    text-align: center;
+}
+
+h2 {
+    font-size: 30px;
+    margin-bottom: 10px;
+    color: white;
+    text-align: center;
+}
+
+textarea {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+    font-family: "Montserrat Alternates", serif;
+    font-weight: 500;
+    font-style: normal;
+    justify-content: center;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #6A0DAD;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    transition: box-shadow 0.3s, background-color 0.3s;
+    outline: none;
+}
+
+button:hover {
+    background-color: #B57EDC;
+    box-shadow: 0 0 15px 2px #B57EDC, 0 0 20px 4px rgba(98, 12, 171, 0.8), 0 0 30px 8px rgba(161, 1, 166, 0.8), 0 0 40px 12px rgba(195, 195, 195, 0.8);
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.button-bot {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.action-button {
+    display: inline-block;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-family: "Montserrat Alternates", serif;
+    font-weight: 600;
+    text-align: center;
+    color: white;
+    background-color: #6A0DAD;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 0 5px 2px rgba(106, 13, 173, 0.5);
+}
+
+.action-button:hover {
+    background-color: #B57EDC;
+    box-shadow: 0 0 15px 2px #B57EDC, 0 0 20px 4px rgba(255, 0, 0, 0.8), 0 0 30px 6px rgba(0, 255, 0, 0.8), 0 0 40px 8px rgba(0, 0, 255, 0.8);
+}
+
+a {
+    font-size: 18px;
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+}
+
+/* Стили для header */
+header {
+    background-color: rgba(24, 23, 28, 0.7);
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    z-index: 1000;
+    padding: 20px 0;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.header-container {
+    float:left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 0 20px;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    display: flex;
+    align-items: center;
+    margin-right: auto;
+}
+
+/* Обычные стили для навигации */
+.nav-links {
+    list-style: none;
+    padding: 0;
+    display: flex; /* Выравниваем ссылки в строку */
+    justify-content: right;
+    gap: 30px;
+    align-items: center;
+}
+
+.nav-links a {
+    font-size: 23px;
+    color: white;
+    text-decoration: none;
+    padding: 5px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.nav-links a:hover {
+    background-color: #ab47bc;
+    box-shadow: 0px 0px 30px 2px #ab47bc;
+}
+
+/* Скрываем меню по умолчанию на мобильных устройствах */
+.nav-links {
+    display: flex; /* Меню по умолчанию отображается как строка */
+}
+
+/* Кнопка для открытия меню */
+.menu-toggle {
+    display: none; /* Скрыта на большом экране */
+    font-size: 30px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* Показываем кнопку гамбургера только на мобильных устройствах */
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    /* Меню и гамбургер */
+    .menu-toggle {
+        display: block; /* Показываем кнопку гамбургера */
+        font-size: 30px;
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        margin-left: auto;
+    }
+
+    h1{
+        font-size: 60px;
+}
+
+    .nav-links {
+        display: none; /* Прячем меню по умолчанию */
+        flex-direction: column; /* Элементы в столбик */
+        position: absolute;
+        top: 70px; /* Отступ от верхнего края */
+        right: 0;
+        background-color: rgba(24, 23, 28, 0.95); /* Темный фон */
+        width: 100%; /* Меню растягивается по ширине экрана */
+        padding: 10px 0;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-links.active {
+        display: flex; /* Показываем меню при активации */
+    }
+
+    .nav-links a {
+        text-align: center; /* Центрируем текст ссылок */
+        padding: 10px 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Разделитель ссылок */
+    }
+
+    /* Центрирование кнопок */
+    button {
+        width: 90%; /* Ограничиваем ширину кнопок */
+        margin: 10px auto; /* Центрируем кнопки */
+    }
+
+    .button-group {
+        flex-direction: column; /* Размещаем кнопки в колонку */
+        gap: 10px;
+    }
+
+    /* Центрирование контента */
+    .containermain, .container {
+        padding: 10px 5%; /* Добавляем отступы для удобства чтения */
+        font-size: 18px; /* Уменьшаем шрифт для мобильных */
+    }
+
+    /* Хедер */
+    header {
+        padding: 10px 15px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .header-container {
+        flex-wrap: nowrap; /* Убираем перенос элементов */
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .title {
+        font-size: 20px; /* Уменьшаем размер заголовка */
+    }
+
+    .logo img {
+        width: 30px;
+        height: 30px; /* Уменьшаем логотип */
+    }
+
+    /* Убираем перекрытие текста хедером */
+    body {
+        padding-top: 100px; /* Увеличиваем отступ сверху */
+    }
+}
+
