@@ -19,7 +19,7 @@
 
 ![image](https://github.com/user-attachments/assets/f39c38ff-3dd8-4e1a-a283-fa5d6e2675fd)
 
-Над проектом работали: Ганина Таисия, Астраханцева Анастасия, Ибатулина Дарья
+Над проектом работали студентки 3-го курса группы НФИбд-01-22: [Ганина Таисия](https://github.com/tsganina), [Астраханцева Анастасия](https://github.com/aaastrakhantseva), [Ибатулина Дарья](https://github.com/deibatulina)
 
 2024
 © Все права защищены
