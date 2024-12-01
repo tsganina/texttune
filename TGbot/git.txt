@@ -1,0 +1,3 @@
+git remote add origin https://github.com/ivan2014398/ProjectTii.git
+git branch -M main
+git push -u origin main
