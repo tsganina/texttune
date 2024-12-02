@@ -9,17 +9,6 @@ from collections import Counter
 
 app = Flask(__name__)
 
-def convert_to_wav_in_memory(file_data):
-    """
-    Конвертирует аудиофайл в формат WAV в памяти.
-    :param file_data: Данные аудиофайла в байтах
-    :return: io.BytesIO объект с WAV-аудио
-    """
-    audio = AudioSegment.from_file(io.BytesIO(file_data))
-    wav_buffer = io.BytesIO()
-    audio.export(wav_buffer, format='wav')
-    wav_buffer.seek(0)
-    return wav_buffer
 
 def recognize_chunk(chunk_data):
     """
